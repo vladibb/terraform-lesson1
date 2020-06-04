@@ -1,12 +1,6 @@
 #!/bin/sh
 echo refreshing backend config for terraform
 
-# dynamic variables file
-cat <<EOV > terraform.tfvars
-aws_owner   = "${AWS_ENVIRONMENT_NAME}"
-aws_profile = "${AWS_ENVIRONMENT_PREFIX}"
-EOV
-
 # dynamic backend
 cat <<EOT > backend.tf
 terraform {
