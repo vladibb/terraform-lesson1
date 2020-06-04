@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+  variables:
+    TF_VERSION: "0.12.8"
+phases:
+
+  install:
+    commands:
+      # install required binary
+      - "curl -s -qL -o /usr/bin/jq https://stedolan.github.io/jq/download/linux64/jq"
+      - "chmod +x /usr/bin/jq"
+      - "cd /usr/bin"
+      - "curl -s -qL -o terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+      - "unzip -o terraform.zip"
+
+  build:
+    commands:
+      - cd "$CODEBUILD_SRC_DIR"
+      - echo "building $TF_ENV"
+      - ./setup.terraform.backend.sh
+      - cat backend.tf
+      - cat terraform.tfvars
+      - terraform init -no-color
+      - terraform apply -auto-approve -no-color
+      - terraform output -json > result.json
+
+  post_build:
+    commands:
+      - echo "terraform completed on `date`"
+
+
+artifacts:
+  files:
+    - '**/*'
